@@ -1,3 +1,4 @@
+require("mod")
 data:extend({
     {
         type = "bool-setting",

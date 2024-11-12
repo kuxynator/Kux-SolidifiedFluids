@@ -1,5 +1,5 @@
+require("mod")
 local main_name = "solidified-fluids"
-local main_path = "__SolidifiedFluids__/"
 local main_suffix_liquid = "--liquefied"
 local main_suffix_solid = "--solidified"
 
@@ -31,21 +31,35 @@ if not tech.icons then
     tech.icons = {{icon = tech.icon, icon_mipmaps = 4, icon_size = 256,               tint = {a = 1.00, b = 0.75, g = 0.70, r = 0.80}}}
 end
 table.insert(tech.icons,
-    {icon = main_path.."graphics/box-overlay_256.png", icon_size = 256, scale = 1.25, tint = {a = 0.75, b = 1.00, g = 1.00, r = 1.00}})
+    {icon = mod.path.."graphics/box-overlay_256.png", icon_size = 256, scale = 1.25, tint = {a = 0.75, b = 1.00, g = 1.00, r = 1.00}})
 
-tech.prerequisites = {"coal-liquefaction", "utility-science-pack"}
-tech.unit = {
-    count = tech.unit.count * 2.0,
-    ingredients =
-    {
-        {"automation-science-pack", 1},
-        {"logistic-science-pack", 1},
-        {"chemical-science-pack", 1},
-        {"production-science-pack", 1},
-        {"utility-science-pack", 1}
-    },
-    time = tech.unit.time
-}
+if mod["Kux-Smart-Linked-Chests"] then
+	tech.prerequisites = {"fluid-handling", "logistic-science-pack"}
+	tech.unit = {
+		count = tech.unit.count * 2.0,
+		ingredients =
+		{
+			{"automation-science-pack", 1},
+			{"logistic-science-pack", 1}
+		},
+		time = tech.unit.time
+	}
+else
+	tech.prerequisites = {"coal-liquefaction", "utility-science-pack"}
+	tech.unit = {
+		count = tech.unit.count * 2.0,
+		ingredients =
+		{
+			{"automation-science-pack", 1},
+			{"logistic-science-pack", 1},
+			{"chemical-science-pack", 1},
+			{"production-science-pack", 1},
+			{"utility-science-pack", 1}
+		},
+		time = tech.unit.time
+	}
+end
+
 tech.effects = {}
 
 data:extend({ tech })

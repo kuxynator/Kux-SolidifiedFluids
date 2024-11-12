@@ -1,38 +1,54 @@
+require("mod")
 local main_name = "solidified-fluids"
-local main_path = "__SolidifiedFluids__/"
 local main_suffix_liquid = "--liquefied"
 local main_suffix_solid = "--solidified"
 
+local compression_factor = 10
 
-for _, fluid in pairs(data.raw.fluid) do
+
+---@param fluid data.FluidPrototype
+local function create_solid_fluid_item(fluid)
     local item = table.deepcopy(data.raw.item["water-barrel"])
+
     item.name = fluid.name..main_suffix_solid
     item.icon = fluid.icon
+	item.icon_size = fluid.icon_size
     item.icons = fluid.icons
+
+	-- convert icon to icons
     if not item.icons then
-        item.icons = {{icon = item.icon, icon_mipmaps = 4, icon_size = 64}}
+        item.icons = {{icon = item.icon, icon_mipmaps = 4, icon_size = item.icon_size or 64, scale = 0.5}}
+		icon_size = nil
+		icon = nil
     end
-    table.insert(item.icons,
-        {icon = main_path.."graphics/box-overlay_64.png",  icon_size = 64, scale = 0.75, tint = {a = 0.75, b = 1.00, g = 1.00, r = 1.00}})
+	-- add overlay
+    --TODO table.insert(item.icons, {icon = mod.path.."graphics/box-overlay_64.png",  icon_size = 64, scale = 1, shift={-16,0}, tint = {a = 0.75, b = 1.00, g = 1.00, r = 1.00}})
 
     item.subgroup = main_name
-    item.stack_size = item.stack_size * 10
+    item.stack_size = item.stack_size * 5
     if settings.startup[main_name.."-stack"].value >= 1 then
-        item.stack_size = settings.startup[main_name.."-stack"].value
+        item.stack_size = (settings.startup[main_name.."-stack"].value --[[@as integer]])
     end
     item.localised_name = {"", {"item-name."..main_name}, " ", {"fluid-name."..fluid.name}}
 
     data:extend({ item })
+	return item
+end
 
-    local recipe1 = table.deepcopy(data.raw.recipe["fill-water-barrel"])
+for _, fluid in pairs(data.raw.fluid) do
+	local item = create_solid_fluid_item(fluid)
+
+    local recipe1 = table.deepcopy(data.raw.recipe["water-barrel"])
     recipe1.name = fluid.name..main_suffix_solid
     recipe1.icon = fluid.icon
     recipe1.icons = fluid.icons
     if not recipe1.icons then
-        recipe1.icons = {{icon = recipe1.icon, icon_mipmaps = 4,   icon_size = 64}}
+        recipe1.icons = {{icon = recipe1.icon, icon_mipmaps = 4, icon_size = 64, scale = 0.5}}
     end
+	table.insert(recipe1.icons, 1,
+            {icon = mod.path.."graphics/box-overlay_64_2.png", icon_size = 64, scale = 0.5})
     table.insert(recipe1.icons,
-        {icon = main_path.."graphics/compress-overlay-alt_64.png", icon_size = 64, scale = 0.70, tint = {a = 0.80, b = 0.85, g = 0.85, r = 0.80}})
+        {icon = mod.path.."graphics/compress-overlay-alt_64_2.png", icon_size = 64, scale = 0.70, tint = {a = 0.80, b = 0.85, g = 0.85, r = 0.80}})
 
     recipe1.show_amount_in_title = false
     recipe1.subgroup = main_name..main_suffix_solid
@@ -41,11 +57,9 @@ for _, fluid in pairs(data.raw.fluid) do
     recipe1.category = "chemistry"
     recipe1.energy_required = 0.1
     recipe1.ingredients = {
-        {type = "fluid", name = fluid.name, amount = 5}
+        {type = "fluid", name = fluid.name, amount = compression_factor}
     }
     recipe1.main_product = nil
-    recipe1.result_count = 1
-    recipe1.result = nil
     recipe1.results = {
         {type = "item", name = item.name, amount = 1}
     }
@@ -64,10 +78,12 @@ for _, fluid in pairs(data.raw.fluid) do
     recipe2.icon = fluid.icon
     recipe2.icons = fluid.icons
     if not recipe2.icons then
-        recipe2.icons = {{icon = recipe2.icon, icon_mipmaps = 4,     icon_size = 64}}
+        recipe2.icons = {{icon = recipe2.icon, icon_mipmaps = 4, icon_size = 64, scale = 0.5}}
     end
+	table.insert(recipe2.icons, 1,
+            {icon = mod.path.."graphics/box-overlay_64_2.png", icon_size = 64, scale = 0.5})
     table.insert(recipe2.icons,
-        {icon = main_path.."graphics/decompress-overlay-alt_64.png", icon_size = 64, scale = 0.70, tint = {a = 0.80, b = 0.85, g = 0.85, r = 0.80}})
+        {icon = mod.path.."graphics/decompress-overlay-alt_64_2.png", icon_size = 64, scale = 0.70, tint = {a = 0.80, b = 0.85, g = 0.85, r = 0.80}})
 
     recipe2.show_amount_in_title = false
     recipe2.subgroup = main_name..main_suffix_liquid
@@ -79,10 +95,8 @@ for _, fluid in pairs(data.raw.fluid) do
         {type = "item", name = item.name, amount = 1}
     }
     recipe2.main_product = nil
-    recipe2.result_count = 1
-    recipe2.result = nil
     recipe2.results = {
-        {type = "fluid", name = fluid.name, amount = 5}
+        {type = "fluid", name = fluid.name, amount = compression_factor}
     }
     recipe2.always_show_products = true
     recipe2.crafting_machine_tint =
