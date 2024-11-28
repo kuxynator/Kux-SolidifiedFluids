@@ -63,7 +63,7 @@ if settings.startup[main_name.."-alt"].value then
                     if not recipe.main_product or recipe.main_product == "" then
                         recipe_alt.localised_name = {"", {"recipe-name."..recipe.name}}
                     end
-                else
+                elseif #recipe.results==1 then
                     local res_name  = ""
                     local prototype = nil
 
