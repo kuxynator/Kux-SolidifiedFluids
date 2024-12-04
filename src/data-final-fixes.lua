@@ -19,13 +19,13 @@ local function find_technology_for_recipe(recipe_name)
 end
 
 local tech_solidified_fluids = data.raw.technology[main_name]
-local tech_oil_gathering = data.raw.technology["oil-gathering"]
+local tech_oil_gathering = data.raw.technology["oil-gathering"] -- not available in py
 for _, fluid in pairs(data.raw.fluid) do
     if not data.raw.recipe["empty-"..fluid.name.."-barrel"] then goto fluid_continue end
     table.insert(tech_solidified_fluids.effects, {type = "unlock-recipe", recipe = fluid.name..main_suffix_solid})
     table.insert(tech_solidified_fluids.effects, {type = "unlock-recipe", recipe = fluid.name..main_suffix_liquid})
 
-	if fluid.name == "water" or fluid.name == "crude-oil" then
+	if tech_oil_gathering and fluid.name == "water" or fluid.name == "crude-oil" then --early unlock
 		table.insert(tech_oil_gathering.effects, {type = "unlock-recipe", recipe = fluid.name..main_suffix_solid})
 		table.insert(tech_oil_gathering.effects, {type = "unlock-recipe", recipe = fluid.name..main_suffix_liquid})
 	end

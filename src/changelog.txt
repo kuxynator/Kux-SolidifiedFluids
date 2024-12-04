@@ -1,4 +1,8 @@
 ---------------------------------------------------------------------------------------------------
+Version: 3.1.2
+  Bugfixes:
+    - fix a crash with py and "oil-gathering" (crash is resolved, not the missing technology itself)
+---------------------------------------------------------------------------------------------------
 Version: 3.1.1
   Bugfixes:
     - fix a crash when a recipe had no results and no localised_name
